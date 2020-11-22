@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (ctx) => Products(),
+      create: (_) => Products(),
       child: MaterialApp(
         title: 'ShopMART',
         theme: ThemeData(primarySwatch: Colors.orange, fontFamily: 'Lato'),
