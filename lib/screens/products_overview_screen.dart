@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../widgets/products_grid.dart';
-import '../providers/products_provider.dart';
+import '../widgets/cart_badge_icon.dart';
+import '../providers/cart.dart';
+import './cart_screen.dart';
+import '../widgets/app_drawer.dart';
 
 enum FilterOpt {
   Fav,
@@ -41,12 +44,27 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
               // }
               //+++
               setState(() {
-                selectedValue == FilterOpt.Fav ? _showonlyFav = true : _showonlyFav = false;
+                selectedValue == FilterOpt.Fav
+                    ? _showonlyFav = true
+                    : _showonlyFav = false;
               });
             },
           ),
+          Consumer<Cart>(
+            builder: (_ctx, cart, ch) => CartBadge(
+              child: ch,
+              value: cart.itemCount.toString(),
+            ),
+            child: IconButton(
+              icon: Icon(Icons.shopping_cart),
+              onPressed: () {
+                Navigator.of(context).pushReplacementNamed(CartScreen.routeName);
+              },
+            ),
+          ),
         ],
       ),
+      drawer: AppDrawer(),
       body: ProductsGrid(_showonlyFav),
     );
   }
