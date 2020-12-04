@@ -1,5 +1,7 @@
-import 'package:flutter/material.dart';
+import 'dart:convert';
 
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import './product.dart';
 
 class Products with ChangeNotifier {
@@ -67,21 +69,46 @@ class Products with ChangeNotifier {
   // }
   //+++
 
-  void addProducts(Product prod) {
-    final newProduct = Product(
-        id: DateTime.now().toString(),
-        title: prod.title,
-        description: prod.description,
-        price: prod.price,
-        imageUrl: prod.imageUrl
-    );
-    _items.add(newProduct);
-    notifyListeners();
+  Future<void> addProducts(Product prod) {
+    //http post....++++
+    const url =
+        'https://..............-rtdb.firebaseio.com/products.json';
+    return http
+        .post(
+      url,
+      body: json.encode({
+        'title': prod.title,
+        'description': prod.description,
+        'imageUrl': prod.imageUrl,
+        'price': prod.price,
+        'isFav': prod.isFav,
+      }),
+    )
+        .then((response) {
+          // print(json.decode(response.body)); // => {name : id_chbc}
+      final newProduct = Product(
+          id: json.decode(response.body)['name'],
+          title: prod.title,
+          description: prod.description,
+          price: prod.price,
+          imageUrl: prod.imageUrl);
+      _items.add(newProduct);
+      notifyListeners();
+    });
+    //++++
+    // final newProduct = Product(
+    //     id: DateTime.now().toString(),
+    //     title: prod.title,
+    //     description: prod.description,
+    //     price: prod.price,
+    //     imageUrl: prod.imageUrl);
+    // _items.add(newProduct);
+    // notifyListeners();
   }
 
-  void updateProduct(String id, Product newProduct){
-    final prodIndex = _items.indexWhere((prod) => prod.id ==id);
-    if(prodIndex >= 0){
+  void updateProduct(String id, Product newProduct) {
+    final prodIndex = _items.indexWhere((prod) => prod.id == id);
+    if (prodIndex >= 0) {
       _items[prodIndex] = newProduct;
       notifyListeners();
     } else {
