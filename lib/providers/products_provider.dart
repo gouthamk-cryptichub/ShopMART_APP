@@ -69,23 +69,20 @@ class Products with ChangeNotifier {
   // }
   //+++
 
-  Future<void> addProducts(Product prod) {
+  Future<void> addProducts(Product prod) async {
     //http post....++++
-    const url =
-        'https://shopmart-app-default-rtdb.firebaseio.com/products';
-    return http
-        .post(
-      url,
-      body: json.encode({
-        'title': prod.title,
-        'description': prod.description,
-        'imageUrl': prod.imageUrl,
-        'price': prod.price,
-        'isFav': prod.isFav,
-      }),
-    )
-        .then((response) {
-          // print(json.decode(response.body)); // => {name : id_chbc}
+    const url = 'https://..........-rtdb.firebaseio.com/products.json';
+    try {
+      final response = await http.post(
+        url,
+        body: json.encode({
+          'title': prod.title,
+          'description': prod.description,
+          'imageUrl': prod.imageUrl,
+          'price': prod.price,
+          'isFav': prod.isFav,
+        }),
+      );
       final newProduct = Product(
           id: json.decode(response.body)['name'],
           title: prod.title,
@@ -94,11 +91,12 @@ class Products with ChangeNotifier {
           imageUrl: prod.imageUrl);
       _items.add(newProduct);
       notifyListeners();
-    }).catchError((error){
+    } catch (error) {
       print(error);
       throw error;
-    });
+    }
     //++++
+
     // final newProduct = Product(
     //     id: DateTime.now().toString(),
     //     title: prod.title,
