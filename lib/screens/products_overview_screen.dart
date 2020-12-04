@@ -6,6 +6,7 @@ import '../widgets/cart_badge_icon.dart';
 import '../providers/cart.dart';
 import './cart_screen.dart';
 import '../widgets/app_drawer.dart';
+import '../providers/products_provider.dart';
 
 enum FilterOpt {
   Fav,
@@ -19,6 +20,24 @@ class ProductsOverviewScreen extends StatefulWidget {
 
 class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   var _showonlyFav = false;
+  var _isfetching = false;
+
+  @override
+  void initState() {
+    // Provider.of<Products>(context).fetchAndSetProducts(); // WONT WORK without listen: false so.. we use Future.delayed(Duration.zero) OR use didchangedependencies
+    Future.delayed(Duration.zero).then((_) {
+      setState(() {
+        _isfetching = true;
+      });
+      Provider.of<Products>(context, listen: false).fetchAndSetProducts().then((_) {
+        setState(() {
+          _isfetching = false;
+        });
+      });
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     // final productsContainer = Provider.of<Products>(context); //+++
@@ -58,14 +77,19 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
             child: IconButton(
               icon: Icon(Icons.shopping_cart),
               onPressed: () {
-                Navigator.of(context).pushReplacementNamed(CartScreen.routeName);
+                Navigator.of(context)
+                    .pushReplacementNamed(CartScreen.routeName);
               },
             ),
           ),
         ],
       ),
       drawer: AppDrawer(),
-      body: ProductsGrid(_showonlyFav),
+      body: _isfetching
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : ProductsGrid(_showonlyFav),
     );
   }
 }
