@@ -72,7 +72,7 @@ class Products with ChangeNotifier {
   Future<void> addProducts(Product prod) {
     //http post....++++
     const url =
-        'https://..............-rtdb.firebaseio.com/products.json';
+        'https://shopmart-app-default-rtdb.firebaseio.com/products';
     return http
         .post(
       url,
@@ -94,6 +94,9 @@ class Products with ChangeNotifier {
           imageUrl: prod.imageUrl);
       _items.add(newProduct);
       notifyListeners();
+    }).catchError((error){
+      print(error);
+      throw error;
     });
     //++++
     // final newProduct = Product(
