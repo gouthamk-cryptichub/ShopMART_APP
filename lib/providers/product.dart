@@ -1,6 +1,10 @@
-import 'package:flutter/foundation.dart';
+import 'dart:convert';
+import 'dart:io';
 
-class Product with ChangeNotifier{
+import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
+
+class Product with ChangeNotifier {
   final String id;
   final String title;
   final String description;
@@ -16,8 +20,27 @@ class Product with ChangeNotifier{
       @required this.imageUrl,
       this.isFav = false});
 
-  void toggleFavStatus() {
-    isFav =!isFav;
+  Future<void> toggleFavStatus() async{
+    final oldStatus = isFav;
+
+    isFav = !isFav;
     notifyListeners();
+    final url =
+        'https://shopmart-app-default-rtdb.firebaseio.com/products/$id.json';
+    try{
+      final response = await http.patch(
+        url,
+        body: json.encode({
+          'isFav': isFav,
+        }),
+      );
+      if(response.statusCode >= 400) {
+        isFav = oldStatus;
+        notifyListeners();
+      }
+    }catch(error) {
+      isFav = oldStatus;
+      notifyListeners();
+    }
   }
 }
