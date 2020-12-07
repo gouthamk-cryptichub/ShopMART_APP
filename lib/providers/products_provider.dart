@@ -1,8 +1,11 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+
 import 'package:http/http.dart' as http;
+
 import './product.dart';
+import '../models/htt_exception.dart';
 
 class Products with ChangeNotifier {
   List<Product> _items = [
@@ -70,12 +73,13 @@ class Products with ChangeNotifier {
   //+++
 
   Future<void> fetchAndSetProducts() async {
-    const url = 'https://shopmart-app-default-rtdb.firebaseio.com/products.json';
+    const url =
+        'https://shopmart-app-default-rtdb.firebaseio.com/products.json';
     try {
       final response = await http.get(url);
       // print (json.decode(response.body));
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
-      final List<Product> loadedProducts =[];
+      final List<Product> loadedProducts = [];
       extractedData.forEach((pId, pData) {
         loadedProducts.add(Product(
           id: pId,
@@ -95,7 +99,8 @@ class Products with ChangeNotifier {
 
   Future<void> addProducts(Product prod) async {
     //http post....++++
-    const url = 'https://shopmart-app-default-rtdb.firebaseio.com/products.json';
+    const url =
+        'https://shopmart-app-default-rtdb.firebaseio.com/products.json';
     try {
       final response = await http.post(
         url,
@@ -131,9 +136,19 @@ class Products with ChangeNotifier {
     // notifyListeners();
   }
 
-  void updateProduct(String id, Product newProduct) {
+  Future<void> updateProduct(String id, Product newProduct) async {
     final prodIndex = _items.indexWhere((prod) => prod.id == id);
     if (prodIndex >= 0) {
+      final url =
+          'https://shopmart-app-default-rtdb.firebaseio.com/products/$id.json';
+      await http.patch(url,
+          body: json.encode({
+            'title': newProduct.title,
+            'description': newProduct.description,
+            'imageUrl': newProduct.imageUrl,
+            'price': newProduct.price,
+          }));
+
       _items[prodIndex] = newProduct;
       notifyListeners();
     } else {
@@ -141,8 +156,23 @@ class Products with ChangeNotifier {
     }
   }
 
-  void deleteProduct(String id) {
-    _items.removeWhere((prod) => prod.id == id);
+  Future<void> deleteProduct(String id) async {
+    final url =
+        'https://shopmart-app-default-rtdb.firebaseio.com/products/$id.json';
+    final existingProdIndex = _items.indexWhere((element) => element.id == id);
+    var existingProd = _items[existingProdIndex];
+    _items.removeAt(existingProdIndex);
     notifyListeners();
+    final response = await http.delete(url);
+
+    if (response.statusCode >= 400) {
+      _items.insert(existingProdIndex, existingProd);
+      notifyListeners();
+      throw HttpException('Could not delete product.');
+    }
+    existingProd = null;
+
+    // _items.removeWhere((prod) => prod.id == id);
+    // notifyListeners();
   }
 }
