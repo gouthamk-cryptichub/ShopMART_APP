@@ -26,7 +26,7 @@ class OrdersScreen extends StatelessWidget {
             );
           } else {
             if (dataSnapshot.error != null) {
-              //error handeling
+              //error handling
               return Center(
                 child: Text('an error occurred!'),
               );
