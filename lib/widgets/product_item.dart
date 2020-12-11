@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import '../screens/product_detail_screen.dart';
 import '../providers/product.dart';
 import '../providers/cart.dart';
+import '../providers/auth.dart';
+
 
 class ProductItem extends StatelessWidget {
   // final String id;
@@ -16,6 +18,7 @@ class ProductItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final product = Provider.of<Product>(context, listen: false);
     final cart = Provider.of<Cart>(context, listen: false);
+    final authData = Provider.of<Auth>(context, listen: false);
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
@@ -38,7 +41,7 @@ class ProductItem extends StatelessWidget {
                 product.isFav ? Icons.favorite : Icons.favorite_border,
               ),
               onPressed: () {
-                product.toggleFavStatus();
+                product.toggleFavStatus(authData.tokencheck);
               },
             ),
           ),

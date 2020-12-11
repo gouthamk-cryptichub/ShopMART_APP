@@ -43,6 +43,9 @@ class Products with ChangeNotifier {
     // ),
   ];
   // var _showFavOnly = false; //+++
+  final String authToken;
+
+  Products(this.authToken, this._items);
 
   List<Product> get items {
     //+++
@@ -73,8 +76,8 @@ class Products with ChangeNotifier {
   //+++
 
   Future<void> fetchAndSetProducts() async {
-    const url =
-        'https://shopmart-app-default-rtdb.firebaseio.com/products.json';
+    final url =
+        'https://shopmart-app-default-rtdb.firebaseio.com/products.json?auth=$authToken';
     try {
       final response = await http.get(url);
       // print (json.decode(response.body));
@@ -102,8 +105,8 @@ class Products with ChangeNotifier {
 
   Future<void> addProducts(Product prod) async {
     //http post....++++
-    const url =
-        'https://shopmart-app-default-rtdb.firebaseio.com/products.json';
+    final  url =
+        'https://shopmart-app-default-rtdb.firebaseio.com/products.json?auth=$authToken';
     try {
       final response = await http.post(
         url,
@@ -143,7 +146,7 @@ class Products with ChangeNotifier {
     final prodIndex = _items.indexWhere((prod) => prod.id == id);
     if (prodIndex >= 0) {
       final url =
-          'https://shopmart-app-default-rtdb.firebaseio.com/products/$id.json';
+          'https://shopmart-app-default-rtdb.firebaseio.com/products/$id.json?auth=$authToken';
       await http.patch(url,
           body: json.encode({
             'title': newProduct.title,
@@ -161,7 +164,7 @@ class Products with ChangeNotifier {
 
   Future<void> deleteProduct(String id) async {
     final url =
-        'https://shopmart-app-default-rtdb.firebaseio.com/products/$id.json';
+        'https://shopmart-app-default-rtdb.firebaseio.com/products/$id.json?auth=$authToken';
     final existingProdIndex = _items.indexWhere((element) => element.id == id);
     var existingProd = _items[existingProdIndex];
     _items.removeAt(existingProdIndex);

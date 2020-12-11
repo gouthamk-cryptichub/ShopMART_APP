@@ -10,10 +10,24 @@ class Auth with ChangeNotifier {
   DateTime _expiryDate;
   String _userId;
 
+  bool get isAuth {
+    //if we hv a token and not expired its looged in
+    return tokencheck != null;
+  }
+
+  String get tokencheck {
+    if (_expiryDate != null &&
+        _expiryDate.isAfter(DateTime.now()) &&
+        _token != null) {
+      return _token;
+    }
+    return null;
+  }
+
   Future<void> signup(String email, String passwd) async {
     const url =
         'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyBC652bXP2nQp4folsvEh1uVCDskGJBSZk';
-    try{
+    try {
       final response = await http.post(
         url,
         body: json.encode(
@@ -28,6 +42,14 @@ class Auth with ChangeNotifier {
       if (responseData['error'] != null) {
         throw HttpException(responseData['error']['message']);
       }
+      _token = responseData['idToken'];
+      _userId = responseData['localID'];
+      _expiryDate = DateTime.now().add(
+        Duration(
+          seconds: int.parse(responseData['expiresIn']),
+        ),
+      );
+      notifyListeners();
     } catch (error) {
       throw error;
     }
@@ -36,7 +58,7 @@ class Auth with ChangeNotifier {
   Future<void> login(String email, String passwd) async {
     const url =
         'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyBC652bXP2nQp4folsvEh1uVCDskGJBSZk';
-    try{
+    try {
       final response = await http.post(
         url,
         body: json.encode(
@@ -51,6 +73,14 @@ class Auth with ChangeNotifier {
       if (responseData['error'] != null) {
         throw HttpException(responseData['error']['message']);
       }
+      _token = responseData['idToken'];
+      _userId = responseData['localID'];
+      _expiryDate = DateTime.now().add(
+        Duration(
+          seconds: int.parse(responseData['expiresIn']),
+        ),
+      );
+      notifyListeners();
     } catch (error) {
       throw error;
     }

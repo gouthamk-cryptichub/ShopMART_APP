@@ -20,13 +20,13 @@ class Product with ChangeNotifier {
       @required this.imageUrl,
       this.isFav = false});
 
-  Future<void> toggleFavStatus() async{
+  Future<void> toggleFavStatus(String authToken) async{
     final oldStatus = isFav;
 
     isFav = !isFav;
     notifyListeners();
     final url =
-        'https://shopmart-app-default-rtdb.firebaseio.com/products/$id.json';
+        'https://shopmart-app-default-rtdb.firebaseio.com/products/$id.json?auth=$authToken';
     try{
       final response = await http.patch(
         url,
