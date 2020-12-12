@@ -76,9 +76,10 @@ class Products with ChangeNotifier {
   // }
   //+++
 
-  Future<void> fetchAndSetProducts() async {
+  Future<void> fetchAndSetProducts([bool filterByUser = false]) async {
+    final filterString = filterByUser ? 'orderBy="creatorId"&equalTo="$uId"' : '';
     var url =
-        'https://shopmart-app-default-rtdb.firebaseio.com/products.json?auth=$authToken';
+        'https://shopmart-app-default-rtdb.firebaseio.com/products.json?auth=$authToken&$filterString';
     try {
       final response = await http.get(url);
       // print (json.decode(response.body));
@@ -122,6 +123,7 @@ class Products with ChangeNotifier {
           'imageUrl': prod.imageUrl,
           'price': prod.price,
           // 'isFav': prod.isFav,
+          'creatorId': uId,
         }),
       );
       final newProduct = Product(
