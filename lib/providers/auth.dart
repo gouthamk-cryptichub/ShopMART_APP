@@ -11,7 +11,7 @@ class Auth with ChangeNotifier {
   String _userId;
 
   bool get isAuth {
-    //if we hv a token and not expired its looged in
+    //if we hv a token and not expired its logged in
     return tokencheck != null;
   }
 
@@ -22,6 +22,10 @@ class Auth with ChangeNotifier {
       return _token;
     }
     return null;
+  }
+
+  String get userId {
+    return _userId;
   }
 
   Future<void> signup(String email, String passwd) async {
@@ -43,7 +47,7 @@ class Auth with ChangeNotifier {
         throw HttpException(responseData['error']['message']);
       }
       _token = responseData['idToken'];
-      _userId = responseData['localID'];
+      _userId = responseData['localId'];
       _expiryDate = DateTime.now().add(
         Duration(
           seconds: int.parse(responseData['expiresIn']),
@@ -74,7 +78,7 @@ class Auth with ChangeNotifier {
         throw HttpException(responseData['error']['message']);
       }
       _token = responseData['idToken'];
-      _userId = responseData['localID'];
+      _userId = responseData['localId'];
       _expiryDate = DateTime.now().add(
         Duration(
           seconds: int.parse(responseData['expiresIn']),

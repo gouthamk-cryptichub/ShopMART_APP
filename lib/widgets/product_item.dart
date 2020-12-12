@@ -41,7 +41,7 @@ class ProductItem extends StatelessWidget {
                 product.isFav ? Icons.favorite : Icons.favorite_border,
               ),
               onPressed: () {
-                product.toggleFavStatus(authData.tokencheck);
+                product.toggleFavStatus(authData.tokencheck, authData.userId);
               },
             ),
           ),

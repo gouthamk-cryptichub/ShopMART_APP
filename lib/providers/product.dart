@@ -20,19 +20,17 @@ class Product with ChangeNotifier {
       @required this.imageUrl,
       this.isFav = false});
 
-  Future<void> toggleFavStatus(String authToken) async{
+  Future<void> toggleFavStatus(String authToken, String uId) async{
     final oldStatus = isFav;
 
     isFav = !isFav;
     notifyListeners();
     final url =
-        'https://shopmart-app-default-rtdb.firebaseio.com/products/$id.json?auth=$authToken';
+        'https://shopmart-app-default-rtdb.firebaseio.com/userFav/$uId/$id.json?auth=$authToken';
     try{
-      final response = await http.patch(
+      final response = await http.put(
         url,
-        body: json.encode({
-          'isFav': isFav,
-        }),
+        body: json.encode(isFav),
       );
       if(response.statusCode >= 400) {
         isFav = oldStatus;

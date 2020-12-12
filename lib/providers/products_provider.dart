@@ -44,8 +44,9 @@ class Products with ChangeNotifier {
   ];
   // var _showFavOnly = false; //+++
   final String authToken;
+  final String uId;
 
-  Products(this.authToken, this._items);
+  Products(this.authToken, this.uId, this._items);
 
   List<Product> get items {
     //+++
@@ -76,7 +77,7 @@ class Products with ChangeNotifier {
   //+++
 
   Future<void> fetchAndSetProducts() async {
-    final url =
+    var url =
         'https://shopmart-app-default-rtdb.firebaseio.com/products.json?auth=$authToken';
     try {
       final response = await http.get(url);
@@ -85,6 +86,10 @@ class Products with ChangeNotifier {
       if (extractedData == null)  {
         return;
       }
+      url =
+          'https://shopmart-app-default-rtdb.firebaseio.com/userFav/$uId.json?auth=$authToken';
+      final favResp = await http.get(url, );
+      final favData = json.decode(favResp.body);
       final List<Product> loadedProducts = [];
       extractedData.forEach((pId, pData) {
         loadedProducts.add(Product(
@@ -93,7 +98,8 @@ class Products with ChangeNotifier {
           description: pData['description'],
           price: pData['price'],
           imageUrl: pData['imageUrl'],
-          isFav: pData['isFav'],
+          // isFav: pData['isFav'],
+          isFav: favData == null ? false : favData[pId] ?? false,
         ));
       });
       _items = loadedProducts;
@@ -115,7 +121,7 @@ class Products with ChangeNotifier {
           'description': prod.description,
           'imageUrl': prod.imageUrl,
           'price': prod.price,
-          'isFav': prod.isFav,
+          // 'isFav': prod.isFav,
         }),
       );
       final newProduct = Product(
