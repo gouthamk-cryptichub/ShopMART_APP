@@ -1,3 +1,4 @@
+import 'package:ShopMART_APP/helpers/custom_route.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -30,6 +31,7 @@ class AppDrawer extends StatelessWidget {
             onTap: () {
               Navigator.of(context)
                   .pushReplacementNamed(OrdersScreen.routeName);
+              // Navigator.of(context).pushReplacement(CustomRoute(builder: (ctx) => OrdersScreen()));
             },
           ),
           Divider(),
