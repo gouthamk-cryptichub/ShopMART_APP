@@ -32,10 +32,10 @@ class Orders with ChangeNotifier {
 
   Future<void> fetchAndSetOrders() async {
     final url = 'https://shopmart-app-default-rtdb.firebaseio.com/orders/$uId.json?auth=$authToken';
-    final respone = await http.get(url);
-    // print(json.decode(respone.body));
+    final response = await http.get(url);
+    print(json.decode(response.body));
     final List<OrderItem> loadedOrders = [];
-    final extractedData = json.decode(respone.body) as Map<String, dynamic>;
+    final extractedData = json.decode(response.body) as Map<String, dynamic>;
     if(extractedData == null){
       return;
     }
